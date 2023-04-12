@@ -10,8 +10,22 @@ Generating grammar for the language (Sameer Mungole and Manisha Deshpande and Sa
 
 
 - Design Documentation
-(Sahihtya Cherukuri, Sudamini Khare and Manisha Deshpande)
+(Sahithya Cherukuri, Sudamini Khare and Manisha Deshpande)
 
 
 - Tools for Lexer and Parsers 
 (Hardik Sakhuja, Sameer Mungole and Sahithya Cherukuri)
+
+
+Future Plan for Contributions
+
+Sameeer Mungole - DCG grammar generation for parsing
+Hardik Sakhuja - Interpreter for the language
+Manisha Deshpande - Evaluator for the language
+Saudamini Khare - Python Tokenizer 
+Sahithya Cherukuri - Semantic Logic
+
+The team plans on researching and working together on other key points as well
+such as
+- Bash script for invoking the parser and Interpreter
+- Research on Make/Cmake
