@@ -1,0 +1,17 @@
+Milestone 1 Contributions:
+
+- Design discussion and features to include:
+Each team member participated in the design discussion and together we decided all the syntax, structure and features of our language.
+Generating grammar for the language (Sameer Mungole and Manisha Deshpande and Sahithya Cherukuri)
+
+
+- Research and Documentation on tools and libraries that fit the project. 
+(Hardik Sakhuja and Saudamini Khare)
+
+
+- Design Documentation
+(Sahihtya Cherukuri, Sudamini Khare and Manisha Deshpande)
+
+
+- Tools for Lexer and Parsers 
+(Hardik Sakhuja, Sameer Mungole and Sahithya Cherukuri)
