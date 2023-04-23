@@ -1,0 +1,16 @@
+x = 2.
+y = 3.
+
+print(x).
+if ( x / 2 ) * 2 == x :
+    print("True").
+else:
+    print("False").
+endif
+
+print(y).
+if ( y / 2 ) * 2 == x :
+    print("True").
+else:
+    print("False").
+endif
