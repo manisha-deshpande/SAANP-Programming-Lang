@@ -1,0 +1,15 @@
+number = 10.
+power = 2.
+print("base").
+print(number).
+print("power").
+print(power).
+
+if number == 1:
+    print(1).
+else:
+    res = 1.
+    for _ in range(0, power):
+        res = res * number.
+    print("result").
+    print(res).
