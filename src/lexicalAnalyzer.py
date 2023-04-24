@@ -53,5 +53,5 @@ def tokenizefile(file):
     TokenizedStdout = list(filter(lambda i: i != '', [i.strip() for i in TokenizedStdout]))
     return TokenizedStdout
 
-tokens = tokenizefile("../test/random.hiss")
+tokens = tokenizefile("../test/testfile1.hiss")
 print(tokens)
