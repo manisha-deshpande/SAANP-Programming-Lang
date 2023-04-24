@@ -1,0 +1,11 @@
+x = 5.
+sum = 0.
+
+print(x).
+
+for i in range(1,x):
+    sum = sum + i.
+    i = i + 1.
+endfor
+
+print(sum).
