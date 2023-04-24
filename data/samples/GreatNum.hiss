@@ -1,0 +1,10 @@
+x = 3.
+y = 9.
+
+print(x).
+print(y).
+
+z = x > y ? x : y.
+
+print("Greater Number:").
+print(z).
