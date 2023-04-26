@@ -28,6 +28,7 @@ def tokenizefile(file):
                     temp_string+=line[j]
                     j += 1
                 tempList.append(temp_string)
+                break
             # if empty space, append s till now    
             elif line[i] == " " and s:
                 tempList.append(s)
