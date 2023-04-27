@@ -9,11 +9,13 @@ def tokenizefile(file):
     endTokens = {"endwhile", "endfor", "endif"}
     TokenizedStdout = []
     for line in code.split("\n"):
+        quoteFlag = 0
         # print(line)
         tempList = []
         s = ""
         i = 0
         while i < len(line):
+            
             # print(f"s is {s}")
             # print(f"i is {i} and list of i is {line[i]}")
             # print(f"templist is {tempList}")
@@ -22,13 +24,18 @@ def tokenizefile(file):
                 tempList.append(s+line[i])
                 s = ""
             if line[i] == '"' or line[i] == "'":
-                temp_string = ""
-                j = i + 1
-                while j < len(line) and line[j] != line[i]:
-                    temp_string+=line[j]
-                    j += 1
-                tempList.append(temp_string)
-                break
+                tempList.append(line[i])
+                if quoteFlag == 1:
+                    quoteFlag = 0
+                else:
+                    temp_string = ""
+                    j = i + 1
+                    while j < len(line) and line[j] != line[i]:
+                        temp_string+=line[j]
+                        j += 1
+                    tempList.append(temp_string)
+                    i = j - 1
+                    quoteFlag = 1
             # if empty space, append s till now    
             elif line[i] == " " and s:
                 tempList.append(s)
@@ -53,6 +60,3 @@ def tokenizefile(file):
 
     TokenizedStdout = list(filter(lambda i: i != '', [i.strip() for i in TokenizedStdout]))
     return TokenizedStdout
-
-tokens = tokenizefile("../test/testfile1.hiss")
-print(tokens)
