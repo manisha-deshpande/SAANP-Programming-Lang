@@ -1,7 +1,7 @@
 % File: parser.pl
 % Authors: mdeshp10, scheru20, and smungole
 % Date: April 28, 2023
-% Version: 1.2
+% Version: 1.3
 % Description: This Prolog program contains predicates for the SAANP Language. It validates the tokenized input program against SAANP grammar.
 
 /*
@@ -41,42 +41,70 @@ stmt --> dec.
 dec --> id,['='],exp,['.'].
 dec --> id,['='],ter,['.'].
 
-% DCG Rule: if
-% Description: This rule specifies that an if/else statement consists of
-% the keyword 'if' followed by a boolean expression, the colon character and a block,
-% followed by either of:
-% - the 'else' keyword, the colon character, a block, ending with the 'endif' keyword.
-% - the 'endif' keyword.
-% TODO: blk can be empty, fix.
-if --> ['if'],bool,[':'],blk,['else'],[':'],blk,['endif'].
-if --> ['if'],bool,[':'],blk,['endif'].
+/* IF-ELSE BLOCK
+?- ife(P, ['if', 'True', ':', 'x', '=', '-', '3', '.', 'endif'], []).
+P = condition(if, bool(True), :, assign(variable(x), =, number(-, 3), '.'), endif) .
 
-% DCG Rule: while
-% Description: This rule specifies that a while statement consists of
-% the 'while' keyword, followed by a boolean expression, the colon character, a block,
-% ending with the 'endwhile' keyword.
-while --> ['while'],bool,[':'],blk,['endwhile'].
+?- ife(P, ['if', 'True', ':', 'x', '=', '-', '3', '.', 'else', ':', 'x', '=', '3', '.', 'endif'], []).
+P = condition(if, bool(True), :, assign(variable(x), =, number(-, 3), '.'), else, :, assign(variable(x), =, number(3), '.'), endif) .
+*/
+ife(condition(if, LOG, :, BLK1, endif, BLK2)) --> 
+    ['if'], log(LOG), [':'], 
+    blk(BLK1),
+    ['endif'],
+    blk(BLK2).
+ife(condition(if, LOG, :, BLK1, else, :, BLK2, endif, BLK3)) --> 
+    ['if'], log(LOG), [':'], 
+    blk(BLK1),
+    ['else'], [':'],
+    blk(BLK2),
+    ['endif'],
+    blk(BLK3).
+ife(condition(if, LOG, :, BLK, endif)) --> 
+    ['if'], log(LOG), [':'], 
+    blk(BLK),
+    ['endif'].
+ife(condition(if, LOG, :, BLK1, else, :, BLK2, endif)) --> 
+    ['if'], log(LOG), [':'], 
+    blk(BLK1),
+    ['else'], [':'],
+    blk(BLK2),
+    ['endif'].
 
-% DCG Rule: for
-% Description: This rule specifies that a traditional for loop statement starts with the 'for' keyword,
-% followed by a number assignment, a comma character, a boolean expression, another comma character
-% separating the increment statement, followed by the colon character, a block,
-% and ends with the 'endfor' keyword.
-for --> ['for'],id,['='],num,[','],bool,inc,[':'],blk,['endfor'].
+/* TRADITIONAL FOR-LOOP
+?- for(P, ['for', 'i', '=', '0', ',', 'i', '<', '10', ',', 'i', '=', 'i', '+', '1', ':', 'print', '(', 'i', ')', '.', 'endfor'], []).
+P = loop(for, variable(i), =, number(0), ',', compare(variable(i), <, number(10)), ',', increment(variable(i), =, arithmetic(variable(i), +, number(1))), :, print(variable(i)), endfor) .
+*/
+for(loop(for, ID, =, NUM, ',', LOG, ',', INC, :, BLK1, endfor, BLK2)) -->
+    ['for'], 
+    id(ID), ['='], num(NUM), [','],
+    log(LOG), [','],
+    inc(INC), [':'],
+    blk(BLK1),
+    ['endfor'],
+    blk(BLK2).
+for(loop(for, ID, =, NUM, ',', LOG, ',', INC, :, BLK, endfor)) -->
+    ['for'], 
+    id(ID), ['='], num(NUM), [','],
+    log(LOG), [','],
+    inc(INC), [':'],
+    blk(BLK),
+    ['endfor'].
+inc(increment(ID, =, EXP)) --> id(ID), ['='], exp(EXP).
 
-% DCG Rule: inc
-% Description: This rule specifies that an increment statement consists of an identifier
-% followed by the assignment operator, an identifier, one of:
-% - addition operator
-% - subtraction operator
-% - multiplication operator
-% - division operator
-% and ends a number.
-inc --> id,['='],id,['+'],num.
-inc --> id,['='],id,['-'],num.
-inc --> id,['='],id,['*'],num.
-inc --> id,['='],id,['/'],num.
-
+/* WHILE LOOP
+?- while(P, ['while', 'i', '<', '10', ':', 'print', '(', 'i', ')', '.', 'i', '=', 'i', '+', '1', '.', 'endwhile'], []).
+P = loop(while, compare(variable(i), <, number(10)), :, print(variable(i), assign(variable(i), =, arithmetic(variable(i), +, number(1)), '.')), endwhile) .
+*/
+while(loop(while, LOG, :, BLK1, endwhile, BLK2)) -->
+    ['while'], log(LOG), [':'],
+    blk(BLK1),
+    ['endwhile'],
+    blk(BLK2).
+while(loop(while, LOG, :, BLK, endwhile)) -->
+    ['while'], log(LOG), [':'],
+    blk(BLK),
+    ['endwhile'].
 
 /* ENHANCED FOR-LOOP
 ?- efor(P, ['for', 'id', 'in', 'range', '(', '0', ',', '10', ')', :, 'print', '(', 'i', ')', '.', 'endfor'], []).
@@ -91,7 +119,6 @@ efor(loop(for, ID, in, range, '(', NUM1, ',', NUM2, ')', :, BLK, endfor)) -->
     ['for'], id(ID), ['in'], ['range'], ['('], num(NUM1), [','], num(NUM2), [')'], [':'],
     blk(BLK),
     ['endfor'].
-
 
 /* PRINT
 ?- print(P, ['print', '(', 'saanp', ')', '.'], []).
@@ -120,7 +147,7 @@ print(print(BOOL)) --> ['print'], ['('], bool(BOOL), [')'], ['.'].
 
 /* TERNARY
 ?- ter(P, ['x', '*', '(', '3', '+', 'y', ')', '=', '=', '0', '?', '3', ':', '-', '3'], []).
-P = ternary(compare(arithmetic(variable(x), *, parentheses(arithmetic(number(3), +, variable(y)))), ==, number(0)), ?, number(3), :, number(-, 3)) .
+P = ternary(compare(arithmetic(variable(x), *, parentheses('(', arithmetic(number(3), +, variable(y)), ')')), ==, number(0)), ?, number(3), :, number(-, 3)) .
 
 ?- ter(P, ['x', '=', '=', '"', 'Hello, W0rld!', '"', '?', '3', ':', '-', '3'], []).
 P = ternary(compare(variable(x), ==, string('Hello, W0rld!')), ?, number(3), :, number(-, 3)) .
@@ -153,7 +180,7 @@ P = compare(number(10), <, variable(x)) .
 P = compare(number(10), >, arithmetic(variable(x), *, number(3))) .
 
 ?- log(P, ['x', '*', '(', '3', '+', 'y', ')', '=', '=', '0'], []).
-P = compare(arithmetic(variable(x), *, parentheses(arithmetic(number(3), +, variable(y)))), ==, number(0)) .
+P = compare(arithmetic(variable(x), *, parentheses('(', arithmetic(number(3), +, variable(y)), ')')), ==, number(0)) .
 
 ?- log(P, ['True', '=', '=', 'False'], []).
 P = compare(bool(True), ==, bool(False)) .
@@ -196,13 +223,13 @@ P = arithmetic(arithmetic(variable(x), *, number(3)), +, variable(y)) .
 P = arithmetic(variable(x), *, arithmetic(number(3), /, variable(y))) .
 
 ?- exp(P, ['(', 'x', '-', '3', ')', '+', 'y'], []).
-P = arithmetic(parentheses(arithmetic(variable(x), -, number(3))), +, variable(y)) .
+P = arithmetic(parentheses('(', arithmetic(variable(x), -, number(3)), ')'), +, variable(y)) .
 
 ?- exp(P, ['x', '*', '(', '-', '3', '+', 'y', ')'], []).
-P = arithmetic(variable(x), *, parentheses(arithmetic(number(-, 3), +, variable(y)))) .
+P = arithmetic(variable(x), *, parentheses('(', arithmetic(number(-, 3), +, variable(y)), ')')) .
 
 ?- exp(P, ['x', '*', '(', 'z', '+', '-', '3', ')'], []).
-P = arithmetic(variable(x), *, parentheses(arithmetic(variable(z), +, number(-, 3)))) .
+P = arithmetic(variable(x), *, parentheses('(', arithmetic(variable(z), +, number(-, 3)), ')')) .
 */
 exp(arithmetic(EXP1, +, EXP2)) --> term(EXP1), ['+'], exp(EXP2).
 exp(arithmetic(EXP1, -, EXP2)) --> term(EXP1), ['-'], exp(EXP2).
@@ -214,7 +241,7 @@ term(arithmetic(EXP1, *, EXP2)) --> factor(EXP1), ['*'], term(EXP2).
 term(arithmetic(EXP1, /, EXP2)) --> factor(EXP1), ['/'], term(EXP2).
 term(EXP) --> factor(EXP).
 
-factor(parentheses(EXP)) --> ['('], exp(EXP), [')'].
+factor(parentheses('(', EXP, ')')) --> ['('], exp(EXP), [')'].
 factor(ID) --> id(ID).
 factor(NUM) --> num(NUM).
 
