@@ -100,27 +100,6 @@ inc --> id,['='],id,['-'],num.
 inc --> id,['='],id,['*'],num.
 inc --> id,['='],id,['/'],num.
 
-% DCG Rule: exp
-% Description:
-exp --> term,['+'],exp.
-exp --> term,['-'],exp.
-exp --> term.
-exp --> string.
-exp --> bool.
-
-% DCG Rule: term
-% Description:
-term --> factor,['*'],term.
-term --> factor,['/'],term.
-term --> factor.
-
-% DCG Rule: factor
-% Description:
-% TODO: fix parenthesis exp.
-factor --> ['('],exp,[')'].
-factor --> id.
-factor --> num.
-
 % DCG Rule: bool
 % Description:
 bool --> cmp.
@@ -134,6 +113,54 @@ cmp --> exp,['!='],exp.
 cmp --> exp,['<'],exp.
 cmp --> exp,['>'],exp.
 cmp --> id.
+
+/* EXPRESSION
+?- exp(P, ['saanp'], []).
+P = variable(saanp) .
+
+?- exp(P, ['"', 'Hello, W0rld!', '"'], []).
+P = string('Hello, W0rld!') .
+
+?- exp(P, ['69'], []).
+P = number(69).
+
+?- exp(P, ['x', '-', '3'], []).
+P = arithmetic(variable(x), -, number(3)) .
+
+?- exp(P, ['3', '+', 'x'], []).
+P = arithmetic(number(3), +, variable(x)) .
+
+?- exp(P, ['x', '-', '3', '+', 'y'], []).
+P = arithmetic(variable(x), -, arithmetic(number(3), +, variable(y))) .
+
+?- exp(P, ['x', '*', '3', '+', 'y'], []).
+P = arithmetic(arithmetic(variable(x), *, number(3)), +, variable(y)) .
+
+?- exp(P, ['x', '*', '3', '/', 'y'], []).
+P = arithmetic(variable(x), *, arithmetic(number(3), /, variable(y))) .
+
+?- exp(P, ['(', 'x', '-', '3', ')', '+', 'y'], []).
+P = arithmetic(parentheses(arithmetic(variable(x), -, number(3))), +, variable(y)) .
+
+?- exp(P, ['x', '*', '(', '-', '3', '+', 'y', ')'], []).
+P = arithmetic(variable(x), *, parentheses(arithmetic(number(-, 3), +, variable(y)))) .
+
+?- exp(P, ['x', '*', '(', 'z', '+', '-', '3', ')'], []).
+P = arithmetic(variable(x), *, parentheses(arithmetic(variable(z), +, number(-, 3)))) .
+*/
+exp(arithmetic(EXP1, +, EXP2)) --> term(EXP1), ['+'], exp(EXP2).
+exp(arithmetic(EXP1, -, EXP2)) --> term(EXP1), ['-'], exp(EXP2).
+exp(EXP) --> term(EXP).
+exp(STR) --> str(STR).
+exp(BOOL) --> bool(BOOL).
+
+term(arithmetic(EXP1, *, EXP2)) --> factor(EXP1), ['*'], term(EXP2).
+term(arithmetic(EXP1, /, EXP2)) --> factor(EXP1), ['/'], term(EXP2).
+term(EXP) --> factor(EXP).
+
+factor(parentheses(EXP)) --> ['('], exp(EXP), [')'].
+factor(ID) --> id(ID).
+factor(NUM) --> num(NUM).
 
 /* IDENTIFIER
 ?- id(P, ['saanp'], []).
