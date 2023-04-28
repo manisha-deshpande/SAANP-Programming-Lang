@@ -57,29 +57,6 @@ if --> ['if'],bool,[':'],blk,['endif'].
 % ending with the 'endwhile' keyword.
 while --> ['while'],bool,[':'],blk,['endwhile'].
 
-% DCG Rule: print
-% Description: This rule specifies that a print statement consists of the 'print' keyword,
-% followed by a parenthesized:
-% - identifier.
-% - number.
-% - string literal.
-% ending with a dot.
-print --> ['print'],['('],id,[')'],['.'].
-print --> ['print'],['('],num,[')'],['.'].
-print --> ['print'],['('],string,[')'],['.'].
-
-% DCG Rule: ter
-% Description: This rule specifies that a ternary expression starts with a boolean expression,
-% followed by a question mark, an expression, the colon character and
-% ends with another expression.
-ter --> bool,['?'],exp,[':'],exp.
-
-% DCG Rule: efor
-% Description: This rule specifies that an enhanced for loop statement starts with the 'for' keyword,
-% followed by an identifier, the 'in' 'range' keywords, a number tuple, the colon character, a block,
-% and ends with the 'endfor' keyword.
-efor --> ['for'],id,['in'],['range'],['('],num,[','],num,[')'],[':'],blk,['endfor'].
-
 % DCG Rule: for
 % Description: This rule specifies that a traditional for loop statement starts with the 'for' keyword,
 % followed by a number assignment, a comma character, a boolean expression, another comma character
@@ -99,6 +76,56 @@ inc --> id,['='],id,['+'],num.
 inc --> id,['='],id,['-'],num.
 inc --> id,['='],id,['*'],num.
 inc --> id,['='],id,['/'],num.
+
+
+/* ENHANCED FOR-LOOP
+?- efor(P, ['for', 'id', 'in', 'range', '(', '0', ',', '10', ')', :, 'print', '(', 'i', ')', '.', 'endfor'], []).
+P = loop(for, variable(id), in, range, '(', number(0), ',', number(10), ')', :, print(variable(i)), endfor) .
+*/
+efor(loop(for, ID, in, range, '(', NUM1, ',', NUM2, ')', :, BLK1, endfor, BLK2)) -->
+    ['for'], id(ID), ['in'], ['range'], ['('], num(NUM1), [','], num(NUM2), [')'], [':'],
+    blk(BLK1),
+    ['endfor'],
+    blk(BLK2).
+efor(loop(for, ID, in, range, '(', NUM1, ',', NUM2, ')', :, BLK, endfor)) -->
+    ['for'], id(ID), ['in'], ['range'], ['('], num(NUM1), [','], num(NUM2), [')'], [':'],
+    blk(BLK),
+    ['endfor'].
+
+
+/* PRINT
+?- print(P, ['print', '(', 'saanp', ')', '.'], []).
+P = print(variable(saanp)) .
+
+?- print(P, ['print', '(', '"', 'Hello, W0rld!', '"', ')', '.'], []).
+P = print(string('Hello, W0rld!')) .
+
+?- print(P, ['print', '(', '69', ')', '.'], []).
+P = print(number(69)).
+
+?- print(P, ['print', '(', '-', '69', ')', '.'], []).
+P = print(number(-, 69)) .
+
+?- print(P, ['print', '(', 'True', ')', '.'], []).
+P = print(bool(True)) .
+*/
+print(print(ID, BLK)) --> ['print'], ['('], id(ID), [')'], ['.'], blk(BLK).
+print(print(STR, BLK)) --> ['print'], ['('], str(STR), [')'], ['.'], blk(BLK).
+print(print(NUM, BLK)) --> ['print'], ['('], num(NUM), [')'], ['.'], blk(BLK).
+print(print(BOOL, BLK)) --> ['print'], ['('], bool(BOOL), [')'], ['.'], blk(BLK).
+print(print(ID)) --> ['print'], ['('], id(ID), [')'], ['.'].
+print(print(STR)) --> ['print'], ['('], str(STR), [')'], ['.'].
+print(print(NUM)) --> ['print'], ['('], num(NUM), [')'], ['.'].
+print(print(BOOL)) --> ['print'], ['('], bool(BOOL), [')'], ['.'].
+
+/* TERNARY
+?- ter(P, ['x', '*', '(', '3', '+', 'y', ')', '=', '=', '0', '?', '3', ':', '-', '3'], []).
+P = ternary(compare(arithmetic(variable(x), *, parentheses(arithmetic(number(3), +, variable(y)))), ==, number(0)), ?, number(3), :, number(-, 3)) .
+
+?- ter(P, ['x', '=', '=', '"', 'Hello, W0rld!', '"', '?', '3', ':', '-', '3'], []).
+P = ternary(compare(variable(x), ==, string('Hello, W0rld!')), ?, number(3), :, number(-, 3)) .
+*/
+ter(ternary(LOG, ?, EXP1, :, EXP2)) --> log(LOG), ['?'], exp(EXP1), [':'], exp(EXP2).
 
 /* LOGICAL
 ?- log(P, ['x'], []).
