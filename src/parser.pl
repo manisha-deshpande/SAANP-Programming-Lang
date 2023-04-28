@@ -1,7 +1,7 @@
-% File: grammarChecker.pl
+% File: parser.pl
 % Authors: mdeshp10, scheru20, and smungole
 % Date: April 28, 2023
-% Version: 1.1
+% Version: 1.2
 % Description: This Prolog program contains predicates for the SAANP Language. It validates the tokenized input program against SAANP grammar.
 
 /*
@@ -100,19 +100,48 @@ inc --> id,['='],id,['-'],num.
 inc --> id,['='],id,['*'],num.
 inc --> id,['='],id,['/'],num.
 
-% DCG Rule: bool
-% Description:
-bool --> cmp.
-bool --> cmp,['and'],cmp.
-bool --> cmp,['or'],cmp.
+/* LOGICAL
+?- log(P, ['x'], []).
+P = variable(x).
 
-% DCG Rule: cmp
-% Description:
-cmp --> exp,['=='],exp.
-cmp --> exp,['!='],exp.
-cmp --> exp,['<'],exp.
-cmp --> exp,['>'],exp.
-cmp --> id.
+?- log(P, ['not', 'True'], []).
+P = logical(not, bool('True')) .
+
+?- log(P, ['x', 'and', 'y'], []).
+P = logical(variable(x), and, variable(y)) .
+
+?- log(P, ['x', 'or', 'y'], []).
+P = logical(variable(x), or, variable(y)) .
+
+?- log(P, ['x', '!', '=', '3'], []).
+P = compare(variable(x), '!=', number(3)) .
+
+?- log(P, ['x', '=', '=', '"', 'Hello, W0rld!', '"'], []).
+P = compare(variable(x), ==, string('Hello, W0rld!')) .
+
+?- log(P, ['10', '<', 'x'], []).
+P = compare(number(10), <, variable(x)) .
+
+?- log(P, ['10', '>', 'x', '*', '3'], []).
+P = compare(number(10), >, arithmetic(variable(x), *, number(3))) .
+
+?- log(P, ['x', '*', '(', '3', '+', 'y', ')', '=', '=', '0'], []).
+P = compare(arithmetic(variable(x), *, parentheses(arithmetic(number(3), +, variable(y)))), ==, number(0)) .
+
+?- log(P, ['True', '=', '=', 'False'], []).
+P = compare(bool(True), ==, bool(False)) .
+*/
+log(logical(not, CMP)) --> ['not'], cmp(CMP).
+log(logical(CMP1, and, CMP2)) --> cmp(CMP1), ['and'], cmp(CMP2).
+log(logical(CMP1, or, CMP2)) --> cmp(CMP1), ['or'], cmp(CMP2).
+log(CMP) --> cmp(CMP).
+
+cmp(compare(EXP1, '==', EXP2)) --> exp(EXP1), ['='], ['='], exp(EXP2).
+cmp(compare(EXP1, '!=', EXP2)) --> exp(EXP1), ['!'], ['='], exp(EXP2).
+cmp(compare(EXP1, <, EXP2)) --> exp(EXP1), ['<'], exp(EXP2).
+cmp(compare(EXP1, >, EXP2)) --> exp(EXP1), ['>'], exp(EXP2).
+cmp(BOOL) --> bool(BOOL).
+cmp(ID) --> id(ID).
 
 /* EXPRESSION
 ?- exp(P, ['saanp'], []).
@@ -219,11 +248,7 @@ num(number(N), [H|T], T) :- H =~ '^[0-9]+$'/i, atom_number(H, N).
 
 /* BOOLEAN
 ?- bool(P, ['True'], []).
-P = bool(True) .
-
-?- bool(P, ['not', 'True'], []).
-P = bool(not, bool(True)) .
+P = bool('True').
 */
-bool(bool(not, BOOL)) --> ['not'], bool(BOOL).
 bool(bool('True')) --> ['True'].
 bool(bool('False')) --> ['False'].
