@@ -1,9 +1,14 @@
 % File: grammarChecker.pl
-% Authors: mdeshp10 and scheru20
-% Date: April 26, 2023
-% Version: 1.0
+% Authors: mdeshp10, scheru20, and smungole
+% Date: April 28, 2023
+% Version: 1.1
 % Description: This Prolog program contains predicates for the SAANP Language. It validates the tokenized input program against SAANP grammar.
-% Usage Example: ?- L =[x,'=',0,'.',y,'=',3,'.',if,x,'==',0,':',y,'=',y,'*',1,'.',x,'=',x,'+',1,'.',else,':',y,'=',x,'+',2,'.', endif],prog(L,[]).
+
+/*
+Using SWI-Prolog 6.3 or later:
+?- pack_install(regex).
+*/
+:- use_module(library(regex)).
 
 % DCG Rule: prog
 % Description: This rule specifies that a program consists of a block.
@@ -119,11 +124,8 @@ factor --> num.
 % DCG Rule: bool
 % Description:
 bool --> cmp.
-bool --> ['true'].
-bool --> ['false'].
 bool --> cmp,['and'],cmp.
 bool --> cmp,['or'],cmp.
-bool --> ['not'],bool.
 
 % DCG Rule: cmp
 % Description:
@@ -133,36 +135,68 @@ cmp --> exp,['<'],exp.
 cmp --> exp,['>'],exp.
 cmp --> id.
 
-% TODO: include negative integers.
-% DCG Rule: num
-% Description:
-num --> integer.
+/* IDENTIFIER
+?- id(P, ['saanp'], []).
+P = variable(saanp).
 
-% DCG Rule: integer
-% Description:
-integer --> digit, integer.
-integer --> digit.
+?- id(P, ['saanp_hiss'], []).
+P = variable(saanp_hiss).
 
-% DCG Rule: digit
-% Description:
-digit --> [0].
-digit --> [1].
-digit --> [2].
-digit --> [3].
-digit --> [4].
-digit --> [5].
-digit --> [6].
-digit --> [7].
-digit --> [8].
-digit --> [9].
+?- id(P, ['saanp.hiss'], []).
+False.
 
-% TODO: include string regex.
-% DCG Rule: string
-% Description:
-string --> [hello].
+?- id(P, ['True'], []).
+False.
+*/
+id(variable(H), [H|T], T) :- 
+    H =~ '^[a-z]+[a-z0-9_]*$'/i,
+    \+ H = 'True',
+    \+ H = 'False',
+    \+ H = 'if',
+    \+ H = 'else',
+    \+ H = 'endif',
+    \+ H = 'for',
+    \+ H = 'endfor',
+    \+ H = 'while',
+    \+ H = 'endwhile',
+    \+ H = 'range',
+    \+ H = 'print'.
 
-% TODO: include identifier regex.
-% DCG Rule: id
-% Description:
-id --> [x].
-id --> [y].
+/* STRING
+?- str(P, ['"', 'Hello', '"'], []).
+P = string('Hello').
+
+?- str(P, ['"', 'Hello, W0rld!', '"'], []).
+P = string('Hello, W0rld!').
+
+?- str(P, ['"', 'Hello" W0rld!', '"'], []).
+False.
+*/
+str(string(H), ['"', H, '"'|T], T) :- H =~ '^[^"]*$'/i.
+
+/* NUMBER
+?- num(P, ['69'], []).
+P = number(69).
+
+?- num(P, ['-', '69'], []).
+P = number(-, 69) .
+
+?- num(P, ['-', '69.0'], []).
+False.
+
+?- num(P, ['-', '69.hiss'], []).
+False.
+*/
+num(number(-, N), ['-', H|T], T) :- H =~ '^[0-9]+$'/i, atom_number(H, N).
+num(number(N), [H|T], T) :- H =~ '^[0-9]+$'/i, atom_number(H, N).
+
+/* BOOLEAN
+?- bool(P, ['True'], []).
+P = bool(True) .
+
+?- bool(P, ['not', 'True'], []).
+P = bool(not, bool(True)) .
+*/
+bool(bool(not, BOOL)) --> ['not'], bool(BOOL).
+bool(bool('True')) --> ['True'].
+bool(bool('False')) --> ['False'].
