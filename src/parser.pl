@@ -10,36 +10,31 @@ Using SWI-Prolog 6.3 or later:
 */
 :- use_module(library(regex)).
 
-% DCG Rule: prog
-% Description: This rule specifies that a program consists of a block.
-prog --> blk.
+prog(program(BLK)) --> blk(BLK).
 
-% DCG Rule: blk
-% Description: This rule specifies that a block consists of a statement or a series of statements.
-blk --> stmt, blk.
-blk --> stmt.
-blk --> [].
+blk(DEC) --> dec(DEC).
+blk(IFE) --> ife(IFE).
+blk(FOR) --> for(FOR).
+blk(WHILE) --> while(WHILE).
+blk(EFOR) --> efor(EFOR).
+blk(PRINT) --> print(PRINT).
 
-% DCG Rule: stmt
-% Description: This rule specifies that a statement can be one of:
-% - an if-else statement
-% - a for statement
-% - an enhanced for statement
-% - a while statement
-% - a print statement
-% - a declaration/assignment statement.
-stmt --> if.
-stmt --> for.
-stmt --> efor.
-stmt --> while.
-stmt --> print.
-stmt --> dec.
+/* DECLARATION
+?- dec(P, ['z', '=', 'x', '=', '=', '"', 'Hello, W0rld!', '"', '?', '3', ':', '-', '3', '.'], []).
+P = assign(variable(z), =, ternary(compare(variable(x), ==, string('Hello, W0rld!')), ?, number(3), :, number(-, 3)), '.') .
 
-% DCG Rule: dec
-% Description: This rule specifies that a declaration consists of an identifier
-% followed by the assignment operator and an expression, ending with a dot.
-dec --> id,['='],exp,['.'].
-dec --> id,['='],ter,['.'].
+?- dec(P, ['z', '=', 'x', '*', '(', '3', '+', 'y', ')', '=', '=', '0', '.'], []).
+P = assign(variable(z), =, compare(arithmetic(variable(x), *, parentheses('(', arithmetic(number(3), +, variable(y)), ')')), ==, number(0)), '.') .
+
+?- dec(P, ['z', '=', 'x', '*', '(', 'z', '+', '-', '3', ')', '.'], []).
+P = assign(variable(z), =, arithmetic(variable(x), *, parentheses('(', arithmetic(variable(z), +, number(-, 3)), ')')), '.') .
+*/
+dec(assign(ID, =, TER, ., BLK)) --> id(ID), ['='], ter(TER), ['.'], blk(BLK).
+dec(assign(ID, =, LOG, ., BLK)) --> id(ID), ['='], log(LOG), ['.'], blk(BLK).
+dec(assign(ID, =, EXP, ., BLK)) --> id(ID), ['='], exp(EXP), ['.'], blk(BLK).
+dec(assign(ID, =, TER, .)) --> id(ID), ['='], ter(TER), ['.'].
+dec(assign(ID, =, LOG, .)) --> id(ID), ['='], log(LOG), ['.'].
+dec(assign(ID, =, EXP, .)) --> id(ID), ['='], exp(EXP), ['.'].
 
 /* IF-ELSE BLOCK
 ?- ife(P, ['if', 'True', ':', 'x', '=', '-', '3', '.', 'endif'], []).
