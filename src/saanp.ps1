@@ -38,14 +38,13 @@ function processing {
 }
 Write-Host -NoNewline "Compiling $args[0] "
 processing
-$output = & python tokenizer.py $args[0]
-Write-Host "Compilation successful!"
-Write-Host $output
+& python tokenizer.py $args[0]  | Out-File -Encoding utf8 saanp
+Add-Content saanp "."
 Write-Host
 Write-Host -NoNewline "Interpreting "
 processing
 Write-Host
-$prologStdout = & swipl -f parser.pl -g "prog(ParseTree, $output, R)"
-Write-Host $prologStdout
-Write-Host
-Write-Host "Done!"
+& swipl -f interpreter.pl -g "interpret, halt."
+Remove-Item saanp
+Write-Host "`n"
+Write-Host "hissssss..."

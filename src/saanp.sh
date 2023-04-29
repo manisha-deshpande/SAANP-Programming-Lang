@@ -44,11 +44,13 @@ processing() {
 
 echo -n "Compiling $1 "
 processing
-output=$(python3 tokenizer.py $1)
+python3 tokenizer.py $1 >> saanp
+echo "." | tee -a saanp
 echo
 echo -n "Interpreting "
 processing
 echo
-swipl -f interpreter.pl -g "interpret($output), halt."
+swipl -f interpreter.pl -g "interpret, halt."
 echo
-echo "hiss..."
+rm saanp
+echo "hissssss..."
