@@ -23,6 +23,7 @@ eval_blk(DEC, ENV, NENV) :- eval_dec(DEC, ENV, NENV).
 eval_blk(IFE, ENV, NENV) :- eval_ife(IFE, ENV, NENV).
 eval_blk(FOR, ENV, NENV) :- eval_for(FOR, ENV, NENV).
 eval_blk(WHILE, ENV, NENV) :- eval_while(WHILE, ENV, NENV).
+eval_blk(EFOR, ENV, NENV) :- eval_efor(EFOR, ENV, NENV).
 eval_blk(PRINT, ENV, NENV) :- eval_print(PRINT, ENV, NENV).
 
 /* EVALUATE DECLARATION
@@ -210,6 +211,57 @@ eval_while(loop(while, LOG, :, BLK1, endwhile), ENV, NENV) :-
     eval_while(loop(while, LOG, :, BLK1, endwhile), UENV, NENV).
 
 eval_while(loop(while, LOG, :, _, endwhile), ENV, ENV) :- eval_log(LOG, false, ENV).
+
+/* EVALUATE ENHANCED FOR-LOOP
+?- eval_efor(loop(for, variable(i), in, range, '(', number(0), ',', number(10), ')', :, print(variable(i)), endfor), [], ENV).
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+ENV = [(i, 10)] .
+
+?- eval_efor(loop(for, variable(i), in, range, '(', number(0), ',', number(10), ')', :, print(variable(i)), endfor, print(string('end'))), [], ENV).
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+end
+ENV = [(i, 10)] .
+*/
+eval_efor(loop(for, ID, in, range, '(', NUM1, ',', NUM2, ')', :, BLK1, endfor, BLK2), ENV, NENV) :-
+    eval_efor(loop(for, ID, in, range, '(', NUM1, ',', NUM2, ')', :, BLK1, endfor), ENV, UENV),
+    eval_blk(BLK2, UENV, NENV).
+
+eval_efor(loop(for, ID, in, range, '(', NUM1, ',', NUM2, ')', :, BLK, endfor), ENV, NENV) :-
+    eval_id(ID, VAR),
+    eval_num(NUM1, VAL1),
+    env_update(VAR, VAL1, ENV, UENV),
+    eval_num(NUM2, VAL2),
+    eval_efor_block(VAR, VAL2, BLK, UENV, NENV).
+
+eval_efor_block(VAR, VAL2, BLK, ENV, NENV) :-
+    env_lookup(VAR, ENV, VAL1),
+    VAL1 < VAL2,
+    eval_blk(BLK, ENV, UENV1),
+    VAL3 is VAL1 + 1,
+    env_update(VAR, VAL3, UENV1, UENV2),
+    eval_efor_block(VAR, VAL2, BLK, UENV2, NENV).
+
+eval_efor_block(VAR, VAL2, _, ENV, ENV) :-
+    env_lookup(VAR, ENV, VAL1),
+    VAL1 >= VAL2.
 
 /* EVALUATE PRINT STATEMENT
 ?- eval_print(print(variable(saanp)), [(saanp, 'hiss')], ENV).
@@ -467,7 +519,7 @@ eval_term(arithmetic(EXP1, /, EXP2), VAL, ENV) :-
     eval_exp(EXP1, VAL1, ENV),
     eval_exp(EXP2, VAL2, ENV),
     VAL2 \= 0,
-    VAL is VAL1 / VAL2.
+    VAL is VAL1 // VAL2.
 eval_term(EXP, VAL, ENV) :- eval_factor(EXP, VAL, ENV).
 
 eval_factor(parentheses('(', EXP, ')'), VAL, ENV) :- eval_exp(EXP, VAL, ENV).
