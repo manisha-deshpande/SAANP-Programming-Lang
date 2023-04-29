@@ -74,29 +74,11 @@ logical_test_cases = {
 
 }
 
-expression_test_cases = {}
-
-# ['z', '=', 'x', '-', '3', '+', 'y', '.']
-
-# ['z', '=', 'x', '*', '3', '+', 'y', '.']
-
-# ['z', '=', 'x', '*', '3', '/', 'y', '.']
-
-string_test_cases = {}
-
-# ['z', '=', '"', 'Hello', '"', '.']
-
-# ['z', '=', '"', 'Hello, World!', '"', '.']
-
-# ['z', '=', '"', 'Hello" World!', '"', '.']
-
-number_test_cases = {}
-
-#  ['z', '=', '-', '69', '.']
-
-# ['z', '=', '-', '69.0', '.']
-
-# ['z', '=', '-', '69.hiss', '.']
+expression_test_cases = {
+    '''z = x - 3 + y.''' : ['z', '=', 'x', '-', '3', '+', 'y', '.'],
+    '''z = x * 3 + y.''' : ['z', '=', 'x', '*', '3', '+', 'y', '.'],
+    '''z = x * 3 / y.''' : ['z', '=', 'x', '*', '3', '/', 'y', '.']
+}
 
 def run_tests(dict):
     i = 1
@@ -129,3 +111,6 @@ run_tests(ternary_test_cases)
 
 print("\n********** Running logical test cases **********",end="\n\n")
 run_tests(logical_test_cases)
+
+print("\n********** Running expression test cases **********",end="\n\n")
+run_tests(expression_test_cases)
