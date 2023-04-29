@@ -15,6 +15,45 @@ env_update(K, V, [], [(K, V)]).
 env_update(K, V, [(K, _)|T], [(K, V)|T]).
 env_update(K, V, [(K1, V1)|T], [(K1, V1)|ENV]) :- K \= K1, env_update(K, V, T, ENV).
 
+/* EVALUATE LOGICAL EXPRESSION
+?- eval_log(logical(not, bool('True')), R, []).
+R = false .
+?- eval_log(logical(not, bool('False')), R, []).
+R = true .
+?- eval_log(logical(not, compare(variable(x), ==, string('Hello, W0rld!'))), R, [(x, 'Hello')]).
+R = true .
+?- eval_log(logical(variable(x), and, variable(y)), R, [(x, true), (y, true)]).
+R = true .
+?- eval_log(logical(variable(x), and, variable(y)), R, [(x, true), (y, false)]).
+R = false .
+?- eval_log(logical(variable(x), and, variable(y)), R, [(x, false), (y, true)]).
+R = false .
+?- eval_log(logical(variable(x), or, variable(y)), R, [(x, false), (y, false)]).
+R = false .
+?- eval_log(logical(variable(x), or, variable(y)), R, [(x, false), (y, true)]).
+R = true .
+?- eval_log(logical(variable(x), or, variable(y)), R, [(x, true), (y, false)]).
+R = true .
+*/
+eval_log(logical(not, CMP), true, ENV) :- eval_cmp(CMP, false, ENV).
+eval_log(logical(not, CMP), false, ENV) :- eval_cmp(CMP, true, ENV).
+eval_log(logical(CMP1, and, CMP2), true, ENV) :-
+    eval_cmp(CMP1, true, ENV),
+    eval_cmp(CMP2, true, ENV).
+eval_log(logical(CMP1, and, _), false, ENV) :- 
+    eval_cmp(CMP1, false, ENV).
+eval_log(logical(CMP1, and, CMP2), false, ENV) :-
+    eval_cmp(CMP1, true, ENV),
+    eval_cmp(CMP2, false, ENV).
+eval_log(logical(CMP1, or, CMP2), false, ENV) :-
+    eval_cmp(CMP1, false, ENV),
+    eval_cmp(CMP2, false, ENV).
+eval_log(logical(CMP1, or, _), true, ENV) :- eval_cmp(CMP1, true, ENV).
+eval_log(logical(CMP1, or, CMP2), true, ENV) :- 
+    eval_cmp(CMP1, false, ENV),
+    eval_cmp(CMP2, true, ENV).
+eval_log(CMP, VAL, ENV) :- eval_cmp(CMP, VAL, ENV).
+
 /* EVALUATE COMPARISON EXPRESSION
 ?- eval_cmp(compare(variable(x), ==, string('Hello, W0rld!')), R, [(x, 'Hello, W0rld!')]).
 R = true .
