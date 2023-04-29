@@ -45,6 +45,7 @@ Write-Host
 Write-Host -NoNewline "Interpreting "
 processing
 Write-Host
-# swipl -s .pl "
+$prologStdout = & swipl -f parser.pl -g "prog(ParseTree, $output, R)"
+Write-Host $prologStdout
 Write-Host
 Write-Host "Done!"

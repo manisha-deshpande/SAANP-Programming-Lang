@@ -51,6 +51,7 @@ echo
 echo -n "Interpreting"
 processing
 echo
-# swipl -s .pl "
+prologStdout = $(swipl -f parser.pl -g "prog(ParseTree, $output, R), halt.")
+echo $prologStdout
 echo
 echo "Done!"
