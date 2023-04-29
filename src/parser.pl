@@ -38,10 +38,10 @@ dec(assign(ID, =, EXP, .)) --> id(ID), ['='], exp(EXP), ['.'].
 
 /* IF-ELSE BLOCK
 ?- ife(P, ['if', 'True', ':', 'x', '=', '-', '3', '.', 'endif'], []).
-P = condition(if, bool(True), :, assign(variable(x), =, number(-, 3), '.'), endif) .
+P = condition(if, bool('True'), :, assign(variable(x), =, number(-, 3), '.'), endif) .
 
 ?- ife(P, ['if', 'True', ':', 'x', '=', '-', '3', '.', 'else', ':', 'x', '=', '3', '.', 'endif'], []).
-P = condition(if, bool(True), :, assign(variable(x), =, number(-, 3), '.'), else, :, assign(variable(x), =, number(3), '.'), endif) .
+P = condition(if, bool('True'), :, assign(variable(x), =, number(-, 3), '.'), else, :, assign(variable(x), =, number(3), '.'), endif) .
 */
 ife(condition(if, LOG, :, BLK1, endif, BLK2)) --> 
     ['if'], log(LOG), [':'], 
@@ -129,7 +129,7 @@ P = print(number(69)).
 P = print(number(-, 69)) .
 
 ?- print(P, ['print', '(', 'True', ')', '.'], []).
-P = print(bool(True)) .
+P = print(bool('True')) .
 */
 print(print(ID, BLK)) --> ['print'], ['('], id(ID), [')'], ['.'], blk(BLK).
 print(print(STR, BLK)) --> ['print'], ['('], str(STR), [')'], ['.'], blk(BLK).
@@ -178,7 +178,7 @@ P = compare(number(10), >, arithmetic(variable(x), *, number(3))) .
 P = compare(arithmetic(variable(x), *, parentheses('(', arithmetic(number(3), +, variable(y)), ')')), ==, number(0)) .
 
 ?- log(P, ['True', '=', '=', 'False'], []).
-P = compare(bool(True), ==, bool(False)) .
+P = compare(bool('True'), ==, bool('False')) .
 */
 log(logical(not, CMP)) --> ['not'], cmp(CMP).
 log(logical(CMP1, and, CMP2)) --> cmp(CMP1), ['and'], cmp(CMP2).
