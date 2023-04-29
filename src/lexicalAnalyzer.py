@@ -1,3 +1,5 @@
+symbols = {"+", "-", "*", "/", "<", "<=", ">", ">=", "(", ")",","}
+endTokens = {"endwhile", "endfor", "endif"}
 def tokenizefile(file):
     # check if the file has a valid extension
     assert file[-4:] == 'hiss', "File Not Supported"
@@ -5,10 +7,12 @@ def tokenizefile(file):
     # read the contents from the file
     code = open(file, 'r').read()
 
-    symbols = {"+", "-", "*", "/", "<", "<=", ">", ">=", "(", ")",","}
-    endTokens = {"endwhile", "endfor", "endif"}
+    TokenizedCode = tokenize(code)
+    print(TokenizedCode)
+
+def tokenize(blob):
     TokenizedStdout = []
-    for line in code.split("\n"):
+    for line in blob.split("\n"):
         quoteFlag = 0
         # print(line)
         tempList = []
@@ -60,3 +64,5 @@ def tokenizefile(file):
 
     TokenizedStdout = list(filter(lambda i: i != '', [i.strip() for i in TokenizedStdout]))
     return TokenizedStdout
+
+print(tokenize("x == 'Hello, World!' ? 3 : -3"))
