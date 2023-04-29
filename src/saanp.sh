@@ -44,7 +44,7 @@ processing() {
 
 echo -n "Compiling $1 "
 processing
-output=$(python3 lexicalAnalyzer.py $1)
+output=$(python3 tokenizer.py $1)
 echo "Compilation successful!"
 echo $output
 echo

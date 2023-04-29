@@ -1,3 +1,4 @@
+import sys
 symbols = {"+", "-", "*", "/", "<", "<=", ">", ">=", "(", ")",","}
 endTokens = {"endwhile", "endfor", "endif"}
 def tokenizefile(file):
@@ -65,4 +66,7 @@ def tokenize(blob):
     TokenizedStdout = list(filter(lambda i: i != '', [i.strip() for i in TokenizedStdout]))
     return TokenizedStdout
 
-print(tokenize("x == 'Hello, World!' ? 3 : -3"))
+
+file = sys.argv[1]
+print(file)
+tokenizefile(file)

@@ -1,11 +1,8 @@
-x = 5.
 sum = 0.
+print("Sum of numbers 1 to 5").
 
-print(x).
-
-for i in range(1,x):
+for i in range(1, 5):
     sum = sum + i.
-    i = i + 1.
 endfor
 
 print(sum).

@@ -38,7 +38,7 @@ function processing {
 }
 Write-Host -NoNewline "Compiling $args[0] "
 processing
-$output = & python lexicalAnalyzer.py $args[0]
+$output = & python tokenizer.py $args[0]
 Write-Host "Compilation successful!"
 Write-Host $output
 Write-Host
