@@ -86,6 +86,11 @@ string_test_cases = {
     '''z = "Hello! World".''' : ['z', '=', '"', 'Hello! World', '"', '.']
 }
 
+number_test_cases = {
+    '''z =  69.''' : ['z', '=', '69', '.'],
+    '''z = - 69.''' : ['z', '=', '-', '69', '.']
+}
+
 def run_tests(dict):
     i = 1
     for k,v in dict.items():
@@ -123,3 +128,6 @@ run_tests(expression_test_cases)
 
 print("\n********** Running string test cases **********",end="\n\n")
 run_tests(string_test_cases)
+
+print("\n********** Running number test cases **********",end="\n\n")
+run_tests(number_test_cases)
