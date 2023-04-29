@@ -29,51 +29,27 @@ echo "     |   |                 "
 echo "     |   |                  "
 sleep 2
 
-# echo "            /^\/^\ "
-# echo "          _|__|  O| "
-# echo "\\/     /~     \_/ \ \ "
-# sleep 0.3
-# clear
-# sleep 0.3
-# echo "            /^\/^\ "
-# echo "          _|__|  O| "
-# echo "\\/     /~     \_/ \ \ "
-# echo " \____|__________/  \ \ "
-# sleep 0.3
-# clear
-# sleep 0.3
-# echo "            /^\/^\ "
-# echo "          _|__|  O| "
-# echo "\\/     /~     \_/ \ \ "
-# echo " \____|__________/  \ \ "
-# echo "        \_______      \ \ "
-# sleep 0.3
-# clear
-# sleep 0.3
-# echo "            /^\/^\ "
-# echo "          _|__|  O| "
-# echo "\\/     /~     \_/ \ \ "
-# echo " \____|__________/  \ \ "
-# echo "        \_______      \ \ "
-# echo "                 \ \     \ \ "
-# sleep 0.3
-# clear
-# sleep 0.3
-# echo "            /^\/^\ "
-# echo "          _|__|  O| "
-# echo "\\/     /~     \_/ \ \ "
-# echo " \____|__________/  \ \ "
-# echo "        \_______      \ \ "
-# echo "                 \ \     \ \ "
-# echo "                  |     \ \ "
-# echo "                 /      / "
 
-echo "Compiling $1 ......."
-output=$(python lexicalAnalyzer.py $1)
+processing() {
+    i=0
+    max=10
+    while [ $i -lt $max ]
+    do
+        echo -n "."
+        i=$((i + 1))
+        sleep 0.2
+    done
+    echo
+}
+
+echo -n "Compiling $1 "
+processing
+output=$(python3 lexicalAnalyzer.py $1)
 echo "Compilation successful!"
 echo $output
 echo
-echo "Interpreting..."
+echo -n "Interpreting"
+processing
 echo
 # swipl -s .pl "
 echo
