@@ -254,7 +254,7 @@ False.
 False.
 */
 id(variable(H), [H|T], T) :- 
-    H =~ '^[a-z]+[a-z0-9_]*$'/i,
+    H =~ '^[a-z_]+[a-z0-9_]*$'/i,
     \+ H = 'True',
     \+ H = 'False',
     \+ H = 'if',
