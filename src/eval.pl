@@ -21,6 +21,7 @@ eval_prog(program(BLK), ENV, NENV) :- eval_blk(BLK, ENV, NENV).
 % EVALUATE BLOCK
 eval_blk(DEC, ENV, NENV) :- eval_dec(DEC, ENV, NENV).
 eval_blk(IFE, ENV, NENV) :- eval_ife(IFE, ENV, NENV).
+eval_blk(FOR, ENV, NENV) :- eval_for(FOR, ENV, NENV).
 eval_blk(PRINT, ENV, NENV) :- eval_print(PRINT, ENV, NENV).
 
 /* EVALUATE DECLARATION
@@ -118,6 +119,58 @@ eval_ife(condition(if, LOG, :, BLK1, else, :, _, endif), ENV, NENV) :-
 eval_ife(condition(if, LOG, :, _, else, :, BLK2, endif), ENV, NENV) :-
     eval_log(LOG, false, ENV),
     eval_blk(BLK2, ENV, NENV).
+
+/* EVALUATE TRADITIONAL FOR-LOOP
+?- eval_for(loop(for, variable(i), =, number(0), ',', compare(variable(i), <, number(10)), ',', increment(variable(i), =, arithmetic(variable(i), +, number(1))), :, print(variable(i)), endfor), [], ENV).
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+ENV = [(i, 10)] .
+?- eval_for(loop(for, variable(i), =, number(0), ',', compare(variable(i), <, number(10)), ',', increment(variable(i), =, arithmetic(variable(i), +, number(1))), :, print(variable(i)), endfor, print(variable(i))), [], ENV).
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+ENV = [(i, 10)] .
+*/
+eval_for(loop(for, ID, =, NUM, ',', LOG, ',', INC, :, BLK1, endfor, BLK2), ENV, NENV) :-
+    eval_id(ID, VAR),
+    eval_num(NUM, VAL),
+    env_update(VAR, VAL, ENV, UENV1),
+    eval_for_block(LOG, INC, BLK1, UENV1, UENV2),
+    eval_blk(BLK2, UENV2, NENV).
+eval_for(loop(for, ID, =, NUM, ',', LOG, ',', INC, :, BLK1, endfor), ENV, NENV) :-
+    eval_id(ID, VAR),
+    eval_num(NUM, VAL),
+    env_update(VAR, VAL, ENV, UENV),
+    eval_for_block(LOG, INC, BLK1, UENV, NENV).
+
+eval_for_block(LOG, INC, BLK, ENV, NENV) :-
+    eval_log(LOG, true, ENV),
+    eval_blk(BLK, ENV, UENV1),
+    eval_inc(INC, UENV1, UENV2),
+    eval_for_block(LOG, INC, BLK, UENV2, NENV).
+
+eval_for_block(LOG, _, _, ENV, ENV) :- eval_log(LOG, false, ENV).
+
+eval_inc(increment(ID, =, EXP), ENV, NENV) :-
+    eval_id(ID, VAR),
+    eval_exp(EXP, VAL, ENV),
+    env_update(VAR, VAL, ENV, NENV).
 
 /* EVALUATE PRINT STATEMENT
 ?- eval_print(print(variable(saanp)), [(saanp, 'hiss')], ENV).
