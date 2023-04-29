@@ -3,14 +3,19 @@ number = 15.
 num1 = number.
 while num1 > 0:
     num1 = num1 - 3.
+endwhile
 if num1 == 0:
     print("Fizz").
+endif
 
 num2 = number.
 while num2 > 0:
     num2 = num2 - 5.
+endwhile
 if num2 == 0:
     print("Buzz").
+endif
 
 if num1 != 0 or num2 != 0:
     print(number).
+endif
