@@ -15,6 +15,122 @@ env_update(K, V, [], [(K, V)]).
 env_update(K, V, [(K, _)|T], [(K, V)|T]).
 env_update(K, V, [(K1, V1)|T], [(K1, V1)|ENV]) :- K \= K1, env_update(K, V, T, ENV).
 
+% EVALUATE PROGRAM
+eval_prog(program(BLK), ENV, NENV) :- eval_blk(BLK, ENV, NENV).
+
+% EVALUATE BLOCK
+eval_blk(DEC, ENV, NENV) :- eval_dec(DEC, ENV, NENV).
+eval_blk(PRINT, ENV, NENV) :- eval_print(PRINT, ENV, NENV).
+
+/* EVALUATE DECLARATION
+?- eval_dec(assign(variable(z), =, ternary(compare(variable(x), ==, string('Hello, W0rld!')), ?, number(3), :, number(-, 3)), '.'), [(x, 'Hello')], ENV).
+ENV = [(x, 'Hello'), (z, -3)] .
+?- eval_dec(assign(variable(z), =, ternary(compare(variable(x), ==, string('Hello, W0rld!')), ?, number(3), :, number(-, 3)), '.'), [(x, 'Hello, W0rld!')], ENV).
+ENV = [(x, 'Hello, W0rld!'), (z, 3)] .
+?- eval_dec(assign(variable(z), =, compare(arithmetic(variable(x), *, parentheses('(', arithmetic(number(3), +, variable(y)), ')')), ==, number(0)), '.'), [(x, 10), (y, -3)], ENV).
+ENV = [(x, 10), (y, -3), (z, true)] .
+?- eval_dec(assign(variable(z), =, arithmetic(variable(x), *, parentheses('(', arithmetic(variable(z), +, number(-, 3)), ')')), '.'), [(x, 10), (z, 3)], ENV).
+ENV = [(x, 10), (z, 0)] .
+*/
+eval_dec(assign(ID, =, TER, '.', BLK), ENV, NENV) :-
+    eval_id(ID, VAR),
+    eval_ter(TER, VAL, ENV),
+    env_update(VAR, VAL, ENV, UENV),
+    eval_blk(BLK, UENV, NENV).
+eval_dec(assign(ID, =, TER, '.'), ENV, NENV) :-
+    eval_id(ID, VAR),
+    eval_ter(TER, VAL, ENV),
+    env_update(VAR, VAL, ENV, NENV).
+
+eval_dec(assign(ID, =, LOG, '.', BLK), ENV, NENV) :-
+    eval_id(ID, VAR),
+    eval_log(LOG, VAL, ENV),
+    env_update(VAR, VAL, ENV, UENV),
+    eval_blk(BLK, UENV, NENV).
+eval_dec(assign(ID, =, LOG, '.'), ENV, NENV) :-
+    eval_id(ID, VAR),
+    eval_log(LOG, VAL, ENV),
+    env_update(VAR, VAL, ENV, NENV).
+
+eval_dec(assign(ID, =, EXP, '.', BLK), ENV, NENV) :-
+    eval_id(ID, VAR),
+    eval_exp(EXP, VAL, ENV),
+    env_update(VAR, VAL, ENV, UENV),
+    eval_blk(BLK, UENV, NENV).
+eval_dec(assign(ID, =, EXP, '.'), ENV, NENV) :-
+    eval_id(ID, VAR),
+    eval_exp(EXP, VAL, ENV),
+    env_update(VAR, VAL, ENV, NENV).
+
+/* EVALUATE PRINT STATEMENT
+?- eval_print(print(variable(saanp)), [(saanp, 'hiss')], ENV).
+hiss
+ENV = [(saanp, hiss)] .
+?- eval_print(print(variable(saanp), print(variable(hiss))), [(saanp, 'hiss'), (hiss, 'saanp')], ENV).
+hiss
+saanp
+ENV = [(saanp, hiss), (hiss, saanp)] .
+?- eval_print(print(string('Hello, W0rld!')), [], ENV).
+Hello, W0rld!
+ENV = [] .
+?- eval_print(print(number(-, 69)), [], ENV).
+-69
+ENV = [] .
+?- eval_print(print(bool('True')), [], ENV).
+true
+ENV = [].
+?- eval_print(print(bool('True'), print(number(-, 69))), [], ENV).
+true
+-69
+ENV = [] .
+*/
+eval_print(print(ID, BLK), ENV, NENV) :-
+    eval_id(ID, VAR),
+    env_lookup(VAR, ENV, VAL),
+    write(VAL), nl,
+    eval_blk(BLK, ENV, NENV).
+eval_print(print(ID), ENV, ENV) :-
+    eval_id(ID, VAR),
+    env_lookup(VAR, ENV, VAL),
+    write(VAL), nl.
+
+eval_print(print(NUM, BLK), ENV, NENV) :-
+    eval_num(NUM, VAL),
+    write(VAL), nl,
+    eval_blk(BLK, ENV, NENV).
+eval_print(print(NUM), ENV, ENV) :-
+    eval_num(NUM, VAL),
+    write(VAL), nl.
+
+eval_print(print(STR, BLK), ENV, NENV) :-
+    eval_str(STR, VAL),
+    write(VAL), nl,
+    eval_blk(BLK, ENV, NENV).
+eval_print(print(STR), ENV, ENV) :-
+    eval_str(STR, VAL),
+    write(VAL), nl.
+
+eval_print(print(BOOL, BLK), ENV, NENV) :-
+    eval_bool(BOOL, VAL),
+    write(VAL), nl,
+    eval_blk(BLK, ENV, NENV).
+eval_print(print(BOOL), ENV, ENV) :-
+    eval_bool(BOOL, VAL),
+    write(VAL), nl.
+
+/* EVALUATE TERNARY EXPRESSION
+?- eval_ter(ternary(compare(variable(x), ==, string('Hello, W0rld!')), ?, number(3), :, number(-, 3)), R, [(x, 'Hello, W0rld!')]).
+R = 3 .
+?- eval_ter(ternary(compare(variable(x), ==, string('Hello, W0rld!')), ?, number(3), :, number(-, 3)), R, [(x, 'Hello')]).
+R = -3 .
+*/
+eval_ter(ternary(LOG, ?, EXP1, :, _), VAL, ENV) :-
+    eval_log(LOG, true, ENV),
+    eval_exp(EXP1, VAL, ENV).
+eval_ter(ternary(LOG, ?, _, :, EXP2), VAL, ENV) :-
+    eval_log(LOG, false, ENV),
+    eval_exp(EXP2, VAL, ENV).
+
 /* EVALUATE LOGICAL EXPRESSION
 ?- eval_log(logical(not, bool('True')), R, []).
 R = false .
@@ -37,21 +153,24 @@ R = true .
 */
 eval_log(logical(not, CMP), true, ENV) :- eval_cmp(CMP, false, ENV).
 eval_log(logical(not, CMP), false, ENV) :- eval_cmp(CMP, true, ENV).
+
 eval_log(logical(CMP1, and, CMP2), true, ENV) :-
     eval_cmp(CMP1, true, ENV),
     eval_cmp(CMP2, true, ENV).
-eval_log(logical(CMP1, and, _), false, ENV) :- 
+eval_log(logical(CMP1, and, _), false, ENV) :-
     eval_cmp(CMP1, false, ENV).
 eval_log(logical(CMP1, and, CMP2), false, ENV) :-
     eval_cmp(CMP1, true, ENV),
     eval_cmp(CMP2, false, ENV).
+
 eval_log(logical(CMP1, or, CMP2), false, ENV) :-
     eval_cmp(CMP1, false, ENV),
     eval_cmp(CMP2, false, ENV).
 eval_log(logical(CMP1, or, _), true, ENV) :- eval_cmp(CMP1, true, ENV).
-eval_log(logical(CMP1, or, CMP2), true, ENV) :- 
+eval_log(logical(CMP1, or, CMP2), true, ENV) :-
     eval_cmp(CMP1, false, ENV),
     eval_cmp(CMP2, true, ENV).
+
 eval_log(CMP, VAL, ENV) :- eval_cmp(CMP, VAL, ENV).
 
 /* EVALUATE COMPARISON EXPRESSION
@@ -102,6 +221,7 @@ eval_cmp(compare(EXP1, <, EXP2), false, ENV) :-
     eval_exp(EXP1, VAL1, ENV),
     eval_exp(EXP2, VAL2, ENV),
     VAL1 >= VAL2.
+
 eval_cmp(compare(EXP1, >, EXP2), true, ENV) :-
     eval_exp(EXP1, VAL1, ENV),
     eval_exp(EXP2, VAL2, ENV),
@@ -110,8 +230,10 @@ eval_cmp(compare(EXP1, >, EXP2), false, ENV) :-
     eval_exp(EXP1, VAL1, ENV),
     eval_exp(EXP2, VAL2, ENV),
     VAL1 =< VAL2.
+
 eval_cmp(compare(EXP1, '!=', EXP2), true, ENV) :- eval_cmp(compare(EXP1, '==', EXP2), false, ENV).
 eval_cmp(compare(EXP1, '!=', EXP2), false, ENV) :- eval_cmp(compare(EXP1, '==', EXP2), true, ENV).
+
 eval_cmp(compare(EXP1, '==', EXP2), true, ENV) :-
     eval_exp(EXP1, VAL1, ENV),
     eval_exp(EXP2, VAL2, ENV),
@@ -120,6 +242,7 @@ eval_cmp(compare(EXP1, '==', EXP2), false, ENV) :-
     eval_exp(EXP1, VAL1, ENV),
     eval_exp(EXP2, VAL2, ENV),
     VAL1 \= VAL2.
+
 eval_cmp(BOOL, VAL, _) :- eval_bool(BOOL, VAL).
 eval_cmp(ID, true, ENV) :- eval_id(ID, VAR), env_lookup(VAR, ENV, true).
 eval_cmp(ID, false, ENV) :- eval_id(ID, VAR), env_lookup(VAR, ENV, false).
