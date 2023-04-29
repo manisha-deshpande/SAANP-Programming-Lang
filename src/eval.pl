@@ -22,6 +22,7 @@ eval_prog(program(BLK), ENV, NENV) :- eval_blk(BLK, ENV, NENV).
 eval_blk(DEC, ENV, NENV) :- eval_dec(DEC, ENV, NENV).
 eval_blk(IFE, ENV, NENV) :- eval_ife(IFE, ENV, NENV).
 eval_blk(FOR, ENV, NENV) :- eval_for(FOR, ENV, NENV).
+eval_blk(WHILE, ENV, NENV) :- eval_while(WHILE, ENV, NENV).
 eval_blk(PRINT, ENV, NENV) :- eval_print(PRINT, ENV, NENV).
 
 /* EVALUATE DECLARATION
@@ -171,6 +172,44 @@ eval_inc(increment(ID, =, EXP), ENV, NENV) :-
     eval_id(ID, VAR),
     eval_exp(EXP, VAL, ENV),
     env_update(VAR, VAL, ENV, NENV).
+
+/* EVALUATE WHILE LOOP
+?- eval_while(loop(while, compare(variable(i), <, number(10)), :, print(variable(i), assign(variable(i), =, arithmetic(variable(i), +, number(1)), '.')), endwhile), [(i, 0)], ENV).
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+ENV = [(i, 10)] .
+?- eval_while(loop(while, compare(variable(i), <, number(10)), :, print(variable(i), assign(variable(i), =, arithmetic(variable(i), +, number(1)), '.')), endwhile, print(variable(i))), [(i, 0)], ENV).
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+ENV = [(i, 10)] .
+*/
+eval_while(loop(while, LOG, :, BLK1, endwhile, BLK2), ENV, NENV) :-
+    eval_while(loop(while, LOG, :, BLK1, endwhile), ENV, UENV),
+    eval_blk(BLK2, UENV, NENV).
+
+eval_while(loop(while, LOG, :, BLK1, endwhile), ENV, NENV) :-
+    eval_log(LOG, true, ENV),
+    eval_blk(BLK1, ENV, UENV),
+    eval_while(loop(while, LOG, :, BLK1, endwhile), UENV, NENV).
+
+eval_while(loop(while, LOG, :, _, endwhile), ENV, ENV) :- eval_log(LOG, false, ENV).
 
 /* EVALUATE PRINT STATEMENT
 ?- eval_print(print(variable(saanp)), [(saanp, 'hiss')], ENV).
