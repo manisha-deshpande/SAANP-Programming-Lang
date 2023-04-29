@@ -45,13 +45,10 @@ processing() {
 echo -n "Compiling $1 "
 processing
 output=$(python3 tokenizer.py $1)
-echo "Compilation successful!"
-echo $output
 echo
-echo -n "Interpreting"
+echo -n "Interpreting "
 processing
 echo
-prologStdout = $(swipl -f parser.pl -g "prog(ParseTree, $output, R), halt.")
-echo $prologStdout
+swipl -f interpreter.pl -g "interpret($output), halt."
 echo
-echo "Done!"
+echo "hiss..."

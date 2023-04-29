@@ -68,5 +68,5 @@ def tokenize(blob):
 
 
 file = sys.argv[1]
-print(file)
+# print(file)
 tokenizefile(file)
