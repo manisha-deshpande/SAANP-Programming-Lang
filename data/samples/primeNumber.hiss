@@ -8,7 +8,8 @@ if x > 1:
     endfor
     print(is_prime).
 else:
-    print("False").
+    print(False).
+endif
 
 
 y = 15.
@@ -21,4 +22,5 @@ if y > 1:
     endfor
     print(is_prime).
 else:
-    print("False").
+    print(False).
+endif

@@ -9,7 +9,7 @@ else:
 endif
 
 print(y).
-if ( y / 2 ) * 2 == x :
+if ( y / 2 ) * 2 == y :
     print("True").
 else:
     print("False").
