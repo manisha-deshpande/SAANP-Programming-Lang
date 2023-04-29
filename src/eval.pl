@@ -20,6 +20,7 @@ eval_prog(program(BLK), ENV, NENV) :- eval_blk(BLK, ENV, NENV).
 
 % EVALUATE BLOCK
 eval_blk(DEC, ENV, NENV) :- eval_dec(DEC, ENV, NENV).
+eval_blk(IFE, ENV, NENV) :- eval_ife(IFE, ENV, NENV).
 eval_blk(PRINT, ENV, NENV) :- eval_print(PRINT, ENV, NENV).
 
 /* EVALUATE DECLARATION
@@ -61,6 +62,62 @@ eval_dec(assign(ID, =, EXP, '.'), ENV, NENV) :-
     eval_id(ID, VAR),
     eval_exp(EXP, VAL, ENV),
     env_update(VAR, VAL, ENV, NENV).
+
+/* IF-ELSE BLOCK
+?- eval_ife(condition(if, bool('True'), :, assign(variable(x), =, number(-, 3), '.'), endif), [], ENV).
+ENV = [(x, -3)] .
+?- eval_ife(condition(if, bool('False'), :, assign(variable(x), =, number(-, 3), '.'), endif), [], ENV).
+ENV = [] .
+?- eval_ife(condition(if, bool('True'), :, assign(variable(x), =, number(-, 3), '.', print(variable(x))), endif), [], ENV).
+-3
+ENV = [(x, -3)] .
+?- eval_ife(condition(if, bool('False'), :, assign(variable(x), =, number(-, 3), '.', print(variable(x))), endif), [], ENV).
+ENV = [] .
+?- eval_ife(condition(if, bool('True'), :, assign(variable(x), =, number(-, 3), '.'), endif, print(variable(x))), [], ENV).
+-3
+ENV = [(x, -3)] .
+?- eval_ife(condition(if, bool('False'), :, assign(variable(x), =, number(-, 3), '.'), endif, print(variable(x))), [], ENV).
+"x" not declared.
+false.
+
+?- eval_ife(condition(if, bool('True'), :, assign(variable(x), =, number(-, 3), '.'), else, :, assign(variable(x), =, number(3), '.'), endif), [], ENV).
+ENV = [(x, -3)] .
+?- eval_ife(condition(if, bool('False'), :, assign(variable(x), =, number(-, 3), '.'), else, :, assign(variable(x), =, number(3), '.'), endif), [], ENV).
+ENV = [(x, 3)] .
+?- eval_ife(condition(if, bool('True'), :, assign(variable(x), =, number(-, 3), '.'), else, :, assign(variable(x), =, number(3), '.'), endif, print(variable(x))), [], ENV).
+-3
+ENV = [(x, -3)] .
+?- eval_ife(condition(if, bool('False'), :, assign(variable(x), =, number(-, 3), '.'), else, :, assign(variable(x), =, number(3), '.'), endif, print(variable(x))), [], ENV).
+3
+ENV = [(x, 3)] .
+*/
+eval_ife(condition(if, LOG, :, BLK1, endif, BLK2), ENV, NENV) :-
+    eval_log(LOG, true, ENV),
+    eval_blk(BLK1, ENV, UENV),
+    eval_blk(BLK2, UENV, NENV).
+eval_ife(condition(if, LOG, :, _, endif, BLK2), ENV, NENV) :-
+    eval_log(LOG, false, ENV),
+    eval_blk(BLK2, ENV, NENV).
+eval_ife(condition(if, LOG, :, BLK1, endif), ENV, NENV) :-
+    eval_log(LOG, true, ENV),
+    eval_blk(BLK1, ENV, NENV).
+eval_ife(condition(if, LOG, :, _, endif), ENV, ENV) :-
+    eval_log(LOG, false, ENV).
+
+eval_ife(condition(if, LOG, :, BLK1, else, :, _, endif, BLK3), ENV, NENV) :-
+    eval_log(LOG, true, ENV),
+    eval_blk(BLK1, ENV, UENV),
+    eval_blk(BLK3, UENV, NENV).
+eval_ife(condition(if, LOG, :, _, else, :, BLK2, endif, BLK3), ENV, NENV) :-
+    eval_log(LOG, false, ENV),
+    eval_blk(BLK2, ENV, UENV),
+    eval_blk(BLK3, UENV, NENV).
+eval_ife(condition(if, LOG, :, BLK1, else, :, _, endif), ENV, NENV) :-
+    eval_log(LOG, true, ENV),
+    eval_blk(BLK1, ENV, NENV).
+eval_ife(condition(if, LOG, :, _, else, :, BLK2, endif), ENV, NENV) :-
+    eval_log(LOG, false, ENV),
+    eval_blk(BLK2, ENV, NENV).
 
 /* EVALUATE PRINT STATEMENT
 ?- eval_print(print(variable(saanp)), [(saanp, 'hiss')], ENV).
