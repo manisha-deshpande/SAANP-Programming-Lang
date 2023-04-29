@@ -9,7 +9,7 @@ def tokenizefile(file):
     code = open(file, 'r').read()
 
     TokenizedCode = tokenize(code)
-    print(TokenizedCode)
+    print(f"{TokenizedCode}.")
 
 def tokenize(blob):
     TokenizedStdout = []
