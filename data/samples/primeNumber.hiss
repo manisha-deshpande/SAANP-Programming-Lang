@@ -5,6 +5,7 @@ if x > 1:
     for i = 2, i < x and is_prime, i = i + 1:
         if (x/i) * i == x:
             is_prime = False.
+        endif
     endfor
     print(is_prime).
 else:
@@ -19,6 +20,7 @@ if y > 1:
     for i = 2, i < y and is_prime, i = i + 1:
         if (y/i) * i == y:
             is_prime = False.
+        endif
     endfor
     print(is_prime).
 else:
