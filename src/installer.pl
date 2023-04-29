@@ -1,0 +1,1 @@
+install :- pack_install(regex).
