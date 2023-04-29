@@ -3,36 +3,59 @@
 # Takes filename as 1st argument
 clear
 echo "            /^\/^\ "
+sleep 0.05
 echo "          _|__|  O| "
+sleep 0.05
 echo "\\/     /~     \_/ \ \ "
+sleep 0.05
 echo " \____|__________/  \ \ "
+sleep 0.05
 echo "        \_______      \ \ "
+sleep 0.05
 echo "                 \ \     \ \ "
+sleep 0.05
 echo "                  |     \ \ "
+sleep 0.05
 echo "                 /      / "
+sleep 0.05
 echo "                /     / "
+sleep 0.05
 echo "              /      /      "
+sleep 0.05
 echo "             /     /       "
+sleep 0.05
 echo "            /    /         "
+sleep 0.05
 echo "          /    /           "
+sleep 0.05
 echo "         /   /             "
+sleep 0.05
 echo "        /   /              "
+sleep 0.05
 echo "       /   /               "
+sleep 0.05
 echo "      /   /                "
+sleep 0.05
 echo "     |   |                 "
+sleep 0.05
 echo "     |   |                 "
+sleep 0.05
 echo "     |   |                 "
+sleep 0.05
 echo "     |   |                 "
+sleep 0.05
 echo "     |   |                 "
+sleep 0.05
 echo "     |   |                 "
+sleep 0.05
 echo "     |   |                 "
+sleep 0.05
 echo "     |   |                  "
-sleep 2
 
 
 processing() {
     i=0
-    max=10
+    max=8
     while [ $i -lt $max ]
     do
         echo -n "."
@@ -42,15 +65,16 @@ processing() {
     echo
 }
 
-echo -n "Compiling $1 "
+echo -n "
+Compiling $1 "
 processing
 python3 tokenizer.py $1 >> saanp
-echo "." | tee -a saanp
 echo
 echo -n "Interpreting "
 processing
 echo
 swipl -f interpreter.pl -g "interpret, halt."
-echo
+echo "
+"
 rm saanp
 echo "hissssss..."

@@ -26,11 +26,10 @@ Write-Host "     |   |                 "
 Write-Host "     |   |                 "
 Write-Host "     |   |                 "
 Write-Host "     |   |                  "
-Start-Sleep -Seconds 2
 
-
+Write-Host "`n"
 function processing {
-    for ($num = 1; $num -le 10; $num++) {
+    for ($num = 1; $num -le 8; $num++) {
         Write-Host -NoNewline "."
         Start-Sleep -Milliseconds 200
     }
@@ -39,7 +38,6 @@ function processing {
 Write-Host -NoNewline "Compiling $args[0] "
 processing
 & python tokenizer.py $args[0]  | Out-File -Encoding utf8 saanp
-Add-Content saanp "."
 Write-Host
 Write-Host -NoNewline "Interpreting "
 processing
