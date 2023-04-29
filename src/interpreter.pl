@@ -1,8 +1,10 @@
 :- include(parser).
 :- include(eval).
 
+install :-
+    pack_install(regex).
+
 interpret :-
-    pack_install(regex),
     open('saanp', read, FILE),
     read(FILE, PROGRAM),
     close(FILE),
