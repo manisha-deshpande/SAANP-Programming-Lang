@@ -80,6 +80,12 @@ expression_test_cases = {
     '''z = x * 3 / y.''' : ['z', '=', 'x', '*', '3', '/', 'y', '.']
 }
 
+string_test_cases = {
+    '''z = "Hello".''' : ['z', '=', '"', 'Hello', '"', '.'],
+    '''z = "Hello, World!".''' : ['z', '=', '"', 'Hello, World!', '"', '.'],
+    '''z = "Hello! World".''' : ['z', '=', '"', 'Hello! World', '"', '.']
+}
+
 def run_tests(dict):
     i = 1
     for k,v in dict.items():
@@ -114,3 +120,6 @@ run_tests(logical_test_cases)
 
 print("\n********** Running expression test cases **********",end="\n\n")
 run_tests(expression_test_cases)
+
+print("\n********** Running string test cases **********",end="\n\n")
+run_tests(string_test_cases)
