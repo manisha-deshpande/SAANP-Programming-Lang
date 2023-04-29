@@ -15,6 +15,76 @@ env_update(K, V, [], [(K, V)]).
 env_update(K, V, [(K, _)|T], [(K, V)|T]).
 env_update(K, V, [(K1, V1)|T], [(K1, V1)|ENV]) :- K \= K1, env_update(K, V, T, ENV).
 
+/* EVALUATE COMPARISON EXPRESSION
+?- eval_cmp(compare(variable(x), ==, string('Hello, W0rld!')), R, [(x, 'Hello, W0rld!')]).
+R = true .
+?- eval_cmp(compare(variable(x), ==, string('Hello, W0rld!')), R, [(x, 'Hello')]).
+R = false .
+?- eval_cmp(compare(variable(x), ==, string('Hello, W0rld!')), R, [(x, 0)]).
+R = false .
+?- eval_cmp(compare(variable(x), '!=', string('Hello, W0rld!')), R, [(x, 'Hello, W0rld!')]).
+R = false .
+?- eval_cmp(compare(variable(x), '!=', string('Hello, W0rld!')), R, [(x, 'Hello')]).
+R = true .
+?- eval_cmp(compare(variable(x), '!=', string('Hello, W0rld!')), R, [(x, 0)]).
+R = true .
+?- eval_cmp(compare(bool('True'), ==, bool('False')), R, []).
+R = false.
+?- eval_cmp(bool('True'), R, []).
+R = true .
+?- eval_cmp(bool('False'), R, []).
+R = false .
+?- eval_cmp(variable(x), R, [(x, true)]).
+R = true .
+?- eval_cmp(variable(x), R, [(x, false)]).
+R = false .
+?- eval_cmp(compare(number(10), <, variable(x)), R, [(x, 20)]).
+R = true .
+?- eval_cmp(compare(number(10), <, variable(x)), R, [(x, 2)]).
+R = false .
+?- eval_cmp(compare(number(10), >, variable(x)), R, [(x, 20)]).
+R = false .
+?- eval_cmp(compare(number(10), >, variable(x)), R, [(x, 2)]).
+R = true .
+?- eval_cmp(compare(number(10), >, arithmetic(variable(x), *, number(3))), R, [(x, 3)]).
+R = true .
+?- eval_cmp(compare(number(10), >, arithmetic(variable(x), *, number(3))), R, [(x, 4)]).
+R = false .
+?- eval_cmp(compare(arithmetic(variable(x), *, parentheses('(', arithmetic(number(3), +, variable(y)), ')')), ==, number(0)), R, [(x, 0), (y, -1)]).
+R = true .
+?- eval_cmp(compare(arithmetic(variable(x), *, parentheses('(', arithmetic(number(3), +, variable(y)), ')')), ==, number(0)), R, [(x, 2), (y, -3)]).
+R = true .
+*/
+eval_cmp(compare(EXP1, <, EXP2), true, ENV) :-
+    eval_exp(EXP1, VAL1, ENV),
+    eval_exp(EXP2, VAL2, ENV),
+    VAL1 < VAL2.
+eval_cmp(compare(EXP1, <, EXP2), false, ENV) :-
+    eval_exp(EXP1, VAL1, ENV),
+    eval_exp(EXP2, VAL2, ENV),
+    VAL1 >= VAL2.
+eval_cmp(compare(EXP1, >, EXP2), true, ENV) :-
+    eval_exp(EXP1, VAL1, ENV),
+    eval_exp(EXP2, VAL2, ENV),
+    VAL1 > VAL2.
+eval_cmp(compare(EXP1, >, EXP2), false, ENV) :-
+    eval_exp(EXP1, VAL1, ENV),
+    eval_exp(EXP2, VAL2, ENV),
+    VAL1 =< VAL2.
+eval_cmp(compare(EXP1, '!=', EXP2), true, ENV) :- eval_cmp(compare(EXP1, '==', EXP2), false, ENV).
+eval_cmp(compare(EXP1, '!=', EXP2), false, ENV) :- eval_cmp(compare(EXP1, '==', EXP2), true, ENV).
+eval_cmp(compare(EXP1, '==', EXP2), true, ENV) :-
+    eval_exp(EXP1, VAL1, ENV),
+    eval_exp(EXP2, VAL2, ENV),
+    VAL1 = VAL2.
+eval_cmp(compare(EXP1, '==', EXP2), false, ENV) :-
+    eval_exp(EXP1, VAL1, ENV),
+    eval_exp(EXP2, VAL2, ENV),
+    VAL1 \= VAL2.
+eval_cmp(BOOL, VAL, _) :- eval_bool(BOOL, VAL).
+eval_cmp(ID, true, ENV) :- eval_id(ID, VAR), env_lookup(VAR, ENV, true).
+eval_cmp(ID, false, ENV) :- eval_id(ID, VAR), env_lookup(VAR, ENV, false).
+
 /* EVALUATE EXPRESSION
 P = arithmetic(variable(x), *, parentheses('(', arithmetic(variable(z), +, number(-, 3)), ')')) .
 */
@@ -77,7 +147,7 @@ eval_term(arithmetic(EXP1, *, EXP2), VAL, ENV) :-
     eval_exp(EXP1, VAL1, ENV),
     eval_exp(EXP2, VAL2, ENV),
     VAL is VAL1 * VAL2.
-eval_term(arithmetic(_, /, EXP), _, ENV) :- 
+eval_term(arithmetic(_, /, EXP), _, ENV) :-
     eval_exp(EXP, VAL, ENV),
     VAL = 0,
     write('division by 0 is undefined.'),
