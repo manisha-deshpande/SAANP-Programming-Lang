@@ -2,9 +2,6 @@ import sys
 symbols = {"+", "-", "*", "/", "<", "<=", ">", ">=", "(", ")",","}
 endTokens = {"endwhile", "endfor", "endif"}
 def tokenizefile(file):
-    # check if the file has a valid extension
-    assert file[-4:] == 'hiss', "File Not Supported"
-
     # read the contents from the file
     code = open(file, 'r').read()
 

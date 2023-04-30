@@ -1,5 +1,14 @@
 # This script compiles the program and then executes it.
 # Takes filename as 1st argument
+# Check if file has a valid extension
+
+$file=$args[0] 
+if (!($file -Like "*.hiss"))
+{
+    Write-Host "File Not Supported"
+    exit
+}
+
 Clear-Host
 
 Write-Host "                        _____                                 "
