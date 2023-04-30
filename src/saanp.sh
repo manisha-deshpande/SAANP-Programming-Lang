@@ -2,10 +2,9 @@
 # This script compiles the program and then executes it.
 # Takes filename as 1st argument
 # Check if file has a valid extension
-
 filename=$1
 extension="${filename##*.}"
-if ! [ $extension = "hiss" ]; 
+if ! [ $extension = "hiss" ];
 then
     echo "File Not Supported"
     exit 1
