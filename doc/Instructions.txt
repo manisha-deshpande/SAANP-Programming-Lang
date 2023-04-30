@@ -1,0 +1,29 @@
+PREREQUISITES:
+
+In Mac/Linux, execution permission will be required to run saanp.sh. One can do so by running the following command -
+chmod +x saanp.sh
+
+In Windows, permission is required to run powershell scripts. One can do so by running the following command in Powershell (Run as administrator) -
+set-executionpolicy remotesigned
+
+Note - parser.pl is using a third-party library for regex and if one does not have the package installed in their prolog installation, SAANP will provide a prompt upon execution, to install the package. One will require to say yes to the prompt.
+
+
+EXECUTION STEPS:
+
+1. LINUX/ MAC OS:
+
+Go to the “src” folder -
+cd src
+
+Run saanp.sh with a.hiss file as an argument -
+./saanp.sh <Path to .hiss file>
+
+
+2. Windows:
+
+Go to the “src” folder -
+cd src
+
+Run saanp.ps1 with a .hiss file as an argument -
+.\saanp.ps1 <Path to .hiss file>

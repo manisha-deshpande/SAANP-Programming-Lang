@@ -150,11 +150,8 @@ ENV = [(i, 10)] .
 ENV = [(i, 10)] .
 */
 eval_for(loop(for, ID, =, NUM, ',', LOG, ',', INC, :, BLK1, endfor, BLK2), ENV, NENV) :-
-    eval_id(ID, VAR),
-    eval_num(NUM, VAL),
-    env_update(VAR, VAL, ENV, UENV1),
-    eval_for_block(LOG, INC, BLK1, UENV1, UENV2),
-    eval_blk(BLK2, UENV2, NENV).
+    eval_for(loop(for, ID, =, NUM, ',', LOG, ',', INC, :, BLK1, endfor), ENV, UENV),
+    eval_blk(BLK2, UENV, NENV).
 eval_for(loop(for, ID, =, NUM, ',', LOG, ',', INC, :, BLK1, endfor), ENV, NENV) :-
     eval_id(ID, VAR),
     eval_num(NUM, VAL),
@@ -448,9 +445,6 @@ eval_cmp(BOOL, VAL, _) :- eval_bool(BOOL, VAL).
 eval_cmp(ID, true, ENV) :- eval_id(ID, VAR), env_lookup(VAR, ENV, true).
 eval_cmp(ID, false, ENV) :- eval_id(ID, VAR), env_lookup(VAR, ENV, false).
 
-/* EVALUATE EXPRESSION
-P = arithmetic(variable(x), *, parentheses('(', arithmetic(variable(z), +, number(-, 3)), ')')) .
-*/
 /* EVALUATE EXPRESSION
 ?- eval_exp(arithmetic(variable(x), -, arithmetic(number(3), +, variable(y))), R, [(x, 1), (y, -2)]).
 R = 0 .
