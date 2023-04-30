@@ -449,9 +449,6 @@ eval_cmp(ID, true, ENV) :- eval_id(ID, VAR), env_lookup(VAR, ENV, true).
 eval_cmp(ID, false, ENV) :- eval_id(ID, VAR), env_lookup(VAR, ENV, false).
 
 /* EVALUATE EXPRESSION
-P = arithmetic(variable(x), *, parentheses('(', arithmetic(variable(z), +, number(-, 3)), ')')) .
-*/
-/* EVALUATE EXPRESSION
 ?- eval_exp(arithmetic(variable(x), -, arithmetic(number(3), +, variable(y))), R, [(x, 1), (y, -2)]).
 R = 0 .
 ?- eval_exp(arithmetic(arithmetic(variable(x), *, number(3)), +, variable(y)), R, [(x, 1), (y, -2)]).
