@@ -63,7 +63,7 @@ def tokenize(blob):
     TokenizedStdout = list(filter(lambda i: i != '', [i.strip() for i in TokenizedStdout]))
     return TokenizedStdout
 
-
-file = sys.argv[1]
+if __name__ == "__main__":
+    file = sys.argv[1]
 # print(file)
-tokenizefile(file)
+    tokenizefile(file)
