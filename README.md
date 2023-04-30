@@ -125,23 +125,32 @@ Language doesn't support the following syntax:
 
 ### Execution Process
 
-<img src="./data/images/graph.png" width="500">
+<img src="./data/images/graph.png" width="700">
 
 **1. Input**
 
-<img src="./data/images/SumOfIntegers.png" width="500">
+```python
+sum = 0.
+print("Sum of numbers 1 to 4").
+
+for i in range(1, 5):
+    sum = sum + i.
+endfor
+
+print(sum).
+```
 
 **2. Tokenization**
 
-<img src="./data/images/Tokens.png" width="500">
+<img src="./data/images/Tokens.png" width="400">
 
 **3. Parsing**
 
-<img src="./data/images/ParseTree-SVG.png" width="500">
-<img src="./data/images/ParseTree-Text.png" width="300">
+<img src="./data/images/ParseTree-SVG.png" width="700">
+<img src="./data/images/ParseTree-Text.png" height="500">
 
 **4. Evaluation**
 
-<img src="./data/images/SumOfIntegers-run.png" height="500">
+<img src="./data/images/SumOfIntegers-run.png" width="500">
 
 ### Thank You!
