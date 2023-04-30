@@ -138,9 +138,10 @@ Language doesn't support the following syntax:
 **3. Parsing**
 
 <img src="./data/images/ParseTree-SVG.png" width="500">
-<br>
 <img src="./data/images/ParseTree-Text.png" width="300">
 
 **4. Evaluation**
 
 <img src="./data/images/SumOfIntegers-run.png" height="500">
+
+### Thank You!
