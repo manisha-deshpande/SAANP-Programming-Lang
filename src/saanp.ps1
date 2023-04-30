@@ -75,10 +75,10 @@ Write-Host -NoNewline "Compiling $args[0] "
 processing
 & python tokenizer.py $args[0]  | Out-File -Encoding utf8 saanp
 Write-Host
-Write-Host "Installing packages"
+Write-Host "Installing packages ........"
 & swipl -f installer.pl -g "install, halt."
 Write-Host
-Write-Host -NoNewline "Interpreting "
+Write-Host -NoNewline "Running "
 processing
 Write-Host
 & swipl -f interpreter.pl -g "interpret, halt."
@@ -95,13 +95,13 @@ Write-Host "         \__/"
 Start-Sleep -Milliseconds 100
 Write-Host "          |^|                                         "
 Start-Sleep -Milliseconds 100
-Write-Host "          |^|        Thank you, Team Saanp           /\"
+Write-Host "          |^|        Thank you, Team Saanp            /\"
 Start-Sleep -Milliseconds 100
-Write-Host "          |^|_______________________________________/ /"
+Write-Host "          |^|________________________________________/ /"
 Start-Sleep -Milliseconds 100
-Write-Host "          |   Hardik Manisha Minnie Sahithya Sameer  /"  
+Write-Host "          |  Hardik Manisha Saudamini Sahithya Sameer /"  
 Start-Sleep -Milliseconds 100
-Write-Host "          \_________________________________________/"
+Write-Host "          \__________________________________________/"
 
 
 Write-Host "`n"
