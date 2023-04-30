@@ -14,6 +14,8 @@ It is easy to code in, therefore useful for beginners. However, unlike `Python` 
 
 For detailed language specification: **[SER502-Spring2023-Team26-Milestone1.pdf](./doc/SER502-Spring2023-Team26-Milestone1.pdf)**
 
+Project Video: **[YouTube](https://www.youtube.com/watch?v=8c6JyjyNlEI)**
+
 ### How to
 
 ### Prerequisites for execution
