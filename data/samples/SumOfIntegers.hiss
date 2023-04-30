@@ -1,5 +1,5 @@
 sum = 0.
-print("Sum of numbers 1 to 5").
+print("Sum of numbers 1 to 4").
 
 for i in range(1, 5):
     sum = sum + i.
